@@ -7,6 +7,23 @@
 | Safa Nadhira A. | 5025231086 |  IUP |
 | Sinta Probondari W. | 5025231067 |  IUP |
 
+
+## Chinese Postman Problem
+
+**Code:**
+
+
+
+
+## Travelling Salesman Problem
+ **Code:**
+
+
+
+
+
+
+
 ## Knight Tour Problem
 **Code:**
 - Link: https://drive.google.com/drive/folders/1ECQD6-cQkg0DzyflG-jSxJZaGaxg0KSU?usp=sharing
