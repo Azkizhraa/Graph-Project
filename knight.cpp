@@ -2,7 +2,7 @@
 #include <vector>
 
 #define N 5
-// 5 5 -> 25 squares
+// 5 5 square 
 // 2 2 start position
 
 using namespace std;
@@ -17,7 +17,7 @@ bool isValid(int x, int y, vector<vector<int>> &board) {
 }
 
 // Recursive function to solve the Knight's Tour problem
-bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board) {
+bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board, vector<pair<int, int>> &path) {
     if (movei == N * N) {
         return true; // All squares are visited
     }
@@ -28,11 +28,13 @@ bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board) {
         int nextY = y + dy[i];
         if (isValid(nextX, nextY, board)) {
             board[nextX][nextY] = movei;
-            if (solveKTUtil(nextX, nextY, movei + 1, board)) {
+            path.push_back({nextX, nextY});
+            if (solveKTUtil(nextX, nextY, movei + 1, board, path)) {
                 return true;
             } else {
                 // Backtrack if the move doesn't lead to a solution
                 board[nextX][nextY] = -1;
+                path.pop_back();
             }
         }
     }
@@ -44,21 +46,20 @@ bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board) {
 bool solveKnightTour(int startX, int startY) {
     // Initialize the chessboard
     vector<vector<int>> board(N, vector<int>(N, -1));
+    vector<pair<int, int>> path;
 
     // Place the knight at the starting position
     board[startX][startY] = 0;
+    path.push_back({startX, startY});
 
     // Solve the Knight's Tour problem
-    if (!solveKTUtil(startX, startY, 1, board)) {
+    if (!solveKTUtil(startX, startY, 1, board, path)) {
         cout << "Solution does not exist" << endl;
         return false;
     } else {
-        // Print the solution
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                cout << board[i][j] << " ";
-            }
-            cout << endl;
+        // Print the path as coordinates
+        for (const auto &p : path) {
+            cout << p.first << " " << p.second << endl;
         }
     }
 
