@@ -181,7 +181,7 @@ For the main function, it will read the number of nodes (variable n) and edges (
 
 ## Chinese Postman Problem
 1. Introduction
-    CPP involves finding the shortest possible route that traverses every street exactly once. The problem is to find shortest path or circuity that visits every edge of the graph at least once.
+    CPP involves finding the shortest path or circuity that visits every edge of the graph at least once.
     By solving this problem, we can optimize routes and minimize the resources required for various tasks.
 
 2. Code Explanation
