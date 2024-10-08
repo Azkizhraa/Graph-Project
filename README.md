@@ -340,11 +340,11 @@ The main function handles the user inputs such as the nodes, edges, and the edge
 
 ## The Knight's Tour
 1. Introduction
-    The Knight's Tour problem is a classic computational puzzle that involves finding a sequence of moves for a knight on a chessboard so that it visits every street exactly once.
+    The Knight's Tour problem is a classic computational puzzle that involves finding a sequence of moves       for a knight on a chessboard so that it visits every street exactly once.
 
 2. Code Explanation
 ```c++
-    #include <iostream>
+#include <iostream>
     #include <vector>
 
     #define N 5
@@ -357,10 +357,10 @@ The main function handles the user inputs such as the nodes, edges, and the edge
         return (x >= 0 && x < N && y >= 0 && y < N &&   board[x][y] == -1);
     }
 ```
-    this function checks if a given move is valid by ensuring that the new square is within the bounds of the chessboard and has not been visited before. the size of the chessboard itself is 5, defined at the beginning of the code. we also defined 2 arrays where each store the possible x and y displacements for a knight's move on a chessboard. in the `isValid` function, there are 3 parameters: x and y which represents the coordinates of the new square to check, and board which refers to a 2D vector representing the chessboard. 
+this function checks if a given move is valid by ensuring that the new square is within the bounds of the chessboard and has not been visited before. the size of the chessboard itself is 5, defined at the beginning of the code. we also defined 2 arrays where each store the possible x and y displacements for a knight's move on a chessboard. in the `isValid` function, there are 3 parameters: x and y which represents the coordinates of the new square to check, and board which refers to a 2D vector representing the chessboard. 
 
 ```c++
-    bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board)   {
+bool solveKTUtil(int x, int y, int movei, vector<vector<int>> &board)   {
         if (movei == N * N) {
             return true; // All squares are visited
         }
@@ -380,10 +380,10 @@ The main function handles the user inputs such as the nodes, edges, and the edge
         return false;
     }
 ```
-    this function is the recursive function that explores all possible moves and backtracks if necessary. there are 4 parameters in this function: x and y which represents the current coordinates of the knight; movei which represents the current move number; and board which refers to the 2D vector representing the chessboard. `if(movei==N*N)` checks if all squares have been visited. and if all squares have been visited, the function will return true, indicating a soultion has been found. there is a loop in this function that checks if each move is valid, and recursively explores the consequences of each move to find a solution.
+this function is the recursive function that explores all possible moves and backtracks if necessary. there are 4 parameters in this function: x and y which represent the current coordinates of the knight; move which represents the current move number; and board which refers to the 2D vector representing the chessboard. `if(movei==N*N)` checks if all squares have been visited. and if all squares have been visited, the function will return true, indicating a solution has been found. there is a loop in this function that checks if each move is valid, and recursively explores the consequences of each move to find a solution.
 
 ```c++
-    bool solveKnightTour(int startX, int startY) {
+bool solveKnightTour(int startX, int startY) {
         vector<vector<int>> board(N, vector<int>(N, -1));
         board[startX][startY] = 0;
 
@@ -402,14 +402,15 @@ The main function handles the user inputs such as the nodes, edges, and the edge
         return true;
     }
 ```
-    this function is responsible for initializing the chessboard, placing the knight at the starting position, and calling the recursive function `solveKTUtil` to solve the knight's tour problem. first, it creates a 2D vector to represent the chessboard and initializes all elements to -1. then it places the knight at the specified starting position. next, it calls the `solveKTUtil`function, print the schessboard with the sequence of moves if the return message is true. this indicates a solution was found. otherwise it will print a message that shows no solution was found. 
+
+This function is responsible for initializing the chessboard, placing the knight in the starting position, and calling the recursive function `solveKTUtil` to solve the knight's tour problem. first, it creates a 2D vector to represent the chessboard and initializes all elements to -1. Then, it places the knight in the specified starting position. next, it calls the `solveKTUtil` function, and prints the chessboard with the sequence of moves if the return message is true. this indicates a solution was found. otherwise, it will print a message that shows no solution was found. 
 
 ```c++
-        int main() {
+int main() {
         int startX = 2, startY = 2;
 
         solveKnightTour(startX, startY);
         return 0;
     }
 ```
-    in the main function, we only declare the starting point which is 2,2. then we call the `solveKnightTour` to solve the problem. 
+in the main function, we only declare the starting point which is 2,2. then we call the `solveKnightTour` to solve the problem. 
