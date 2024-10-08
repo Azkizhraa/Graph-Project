@@ -181,12 +181,162 @@ For the main function, it will read the number of nodes (variable n) and edges (
 
 ## Chinese Postman Problem
 1. Introduction
-    CPP involves finding the shortest possible route that traverses every street exactly once. 
-    [tambahin penjelasan blm tau apa, bntr yak]
+    CPP involves finding the shortest possible route that traverses every street exactly once. The problem is to find shortest path or circuity that visits every edge of the graph at least once.
     By solving this problem, we can optimize routes and minimize the resources required for various tasks.
 
 2. Code Explanation
+```c++
+    #include <bits/stdc++.h>
+    using namespace std; 
+```
+This includes all the standard libraries in C++.
 
+```c++
+vector<int> dijkstra(int start, const vector<vector<pair<int, pair<int, int>>>> &g) {
+    int n = g.size();
+    vector<int> dist(n, INT_MAX);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+    dist[start] = 0;
+    pq.push({0, start});
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+
+        for (const auto &[vIndex, weightPair] : g[u]) {
+            int weight = weightPair.first; // Get the cost of the edge
+            if (dist[u] + weight < dist[vIndex]) {
+                dist[vIndex] = dist[u] + weight;
+                pq.push({dist[vIndex], vIndex});
+            }
+        }
+    }
+    return dist;
+}
+```
+This algorithm find the shortest path from a starting node to all the other nodes in a weighted graph. It uses a priority queue to explore the nearest node iteratively, updating the shortest paths to its neighbors and if a shorter path is found, it will update the distance and add the neighbour to the priority queue.
+
+```c++
+void findEulerianCircuit(int u, vector<vector<pair<int, pair<int, int>>>> &g, vector<int> &route) {
+    stack<int> s;
+    s.push(u);
+
+    while (!s.empty()) {
+        int curr = s.top();
+        if (!g[curr].empty()) {
+            auto nextEdge = g[curr].back();
+            s.push(nextEdge.first);
+            g[curr].pop_back();
+
+            // Remove the edge from the other end as well
+            auto &nextNodeEdges = g[nextEdge.first];
+            nextNodeEdges.erase(remove_if(nextNodeEdges.begin(), nextNodeEdges.end(),
+                [curr](const auto &edge) { return edge.first == curr; }), nextNodeEdges.end());
+        } else {
+            route.push_back(curr);
+            s.pop();
+        }
+    }
+    reverse(route.begin(), route.end());
+}
+```
+Constructs an Eulerian circuit using a stack to keep track of the current path. The algorithm begins by pushing the starting node onto a stack and iterates while there are nodes in the stack. It checks if the current node has unvisited edges; if so, it follows the last edge to the next node and removes that edge from both ends of the graph to prevent revisiting. If no edges are left for the current node, it adds the node to the route and pops it from the stack. Finally, the route is reversed to present it in the correct order.
+
+```c++
+class Solution {
+public:
+    int chinesePostmanProblem(vector<vector<int>> &edges, int n, int start) {
+        vector<vector<pair<int, pair<int, int>>>> g(n + 1); // Store edges with costs (1-based indexing)
+        int totalCost = 0;
+
+        // Building the graph and calculating the total cost
+        for (const auto &edge : edges) {
+            int edgeName = edge[0], node1 = edge[1], node2 = edge[2], cost = edge[3];
+            totalCost += cost;
+            g[node1].emplace_back(node2, make_pair(cost, edgeName)); // Store the cost and edge name
+            g[node2].emplace_back(node1, make_pair(cost, edgeName)); // Store the reverse edge
+        }
+
+        vector<int> oddDegreeVertices, degree(n + 1, 0); // Adjust for 1-based indexing
+        for (int i = 1; i <= n; i++) {
+            degree[i] = g[i].size();
+            if (degree[i] % 2) oddDegreeVertices.push_back(i);
+        }
+
+        // If there are no odd degree vertices, we can use the existing edges
+        if (oddDegreeVertices.empty()) {
+            cout << "Cost: " << totalCost << endl << "Route: ";
+            return totalCost;
+        }
+
+        int oddCount = oddDegreeVertices.size();
+        vector<vector<int>> shortestPaths(oddCount, vector<int>(oddCount));
+
+        // Finding shortest paths between odd degree vertices
+        for (int i = 0; i < oddCount; i++) {
+            vector<int> dist = dijkstra(oddDegreeVertices[i], g);
+            for (int j = 0; j < oddCount; j++) {
+                shortestPaths[i][j] = dist[oddDegreeVertices[j]];
+            }
+        }
+
+        // Find the minimum cost for pairing odd degree vertices
+        int minAdditionalCost = INT_MAX;
+        vector<int> pairing(oddCount);
+        iota(pairing.begin(), pairing.end(), 0);
+
+        do {
+            int currentCost = 0;
+            for (int i = 0; i < oddCount; i += 2) {
+                currentCost += shortestPaths[pairing[i]][pairing[i + 1]];
+            }
+            minAdditionalCost = min(minAdditionalCost, currentCost);
+        } while (next_permutation(pairing.begin(), pairing.end()));
+
+        totalCost += minAdditionalCost;
+        cout << "Cost: " << totalCost << endl;
+
+        // Finding the Eulerian circuit and storing the edge names in the route
+        vector<int> route;
+        findEulerianCircuit(start, g, route);
+
+        cout << "Route: ";
+        for (size_t i = 0; i < route.size(); ++i) {
+            cout << route[i];
+            if (i < route.size() - 1) cout << ", ";
+        }
+        
+        // Ensure the route returns to the start node
+        cout << ", " << route[0] << endl; // Print the starting point at the end
+
+        return totalCost;
+    }
+};
+```
+This class contains the main logic in solving the Chinese Postman Problem. The algorithm constructs a graph using an adjacency list to represent edges, while also calculating the total cost of all edges, storing each edge with its cost and identifier. It then determines the degree of each vertex, collecting those with odd degrees, as these vertices must be paired to create an Eulerian circuit, which requires all vertices to have even degrees. If there are no odd degree vertices, the function outputs the total cost and route, indicating that an Eulerian circuit is already possible. For graphs with odd degree vertices, Dijkstra's algorithm computes the shortest paths between all pairs, and permutations are used to find the minimum cost of pairing these vertices to achieve even degrees. The minimum additional cost is added to the total cost, and the findEulerianCircuit function is called to retrieve and print the final path.
+
+```c++
+int main() {
+    int n, e; 
+    cin >> n >> e; 
+
+    vector<vector<int>> edges(e, vector<int>(4)); 
+    for (int i = 0; i < e; i++) {
+        int edgeName, node1, node2, cost;
+        cin >> edgeName >> node1 >> node2 >> cost; 
+        edges[i] = {edgeName, node1, node2, cost}; 
+    }
+
+    int start;
+    cin >> start; 
+
+    Solution sol;
+    sol.chinesePostmanProblem(edges, n, start); 
+
+    return 0;
+}
+```
+The main function handles the user inputs such as the nodes, edges, and the edges details. It stores these details in the edges vector and it then prompts for a starting node and calls the chinesePostmanProblem method to compute the solution.
 
 ## The Knight's Tour
 1. Introduction
